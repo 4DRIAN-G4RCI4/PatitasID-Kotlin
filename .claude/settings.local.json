@@ -4,7 +4,12 @@
       "Bash(git config *)",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(ssh -T git@github.com)",
+      "mcp__d9bcb7da-270d-4963-8da2-e34328a9cc94__get_screenshot"
     ]
   }
 }
