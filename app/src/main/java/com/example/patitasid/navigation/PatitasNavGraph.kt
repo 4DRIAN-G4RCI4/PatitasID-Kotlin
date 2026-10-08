@@ -6,16 +6,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.patitasid.ui.screens.adopciones.AdopcionesScreen
 import com.example.patitasid.ui.screens.auth.LoginScreen
 import com.example.patitasid.ui.screens.auth.RegisterScreen
-import com.example.patitasid.ui.screens.campanas.CampanasScreen
 import com.example.patitasid.ui.screens.carnet.CarnetDetalleScreen
+import com.example.patitasid.ui.screens.demo.DemoScreen
 import com.example.patitasid.ui.screens.home.HomeScreen
-import com.example.patitasid.ui.screens.mapa.MapaScreen
-import com.example.patitasid.ui.screens.mascotas.MisMascotasScreen
-import com.example.patitasid.ui.screens.noticias.NoticiasScreen
-import com.example.patitasid.ui.screens.perfil.PerfilScreen
 import com.example.patitasid.ui.screens.splash.SplashScreen
 import com.example.patitasid.ui.screens.veterinaria.VeterinariaDetalleScreen
 
@@ -24,70 +19,62 @@ fun PatitasNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
 
         composable(Screen.Splash.route) {
-            SplashScreen(onNavigate = { navController.navigate(Screen.Login.route) })
+            SplashScreen(onNavigate = {
+                navController.navigate(Screen.Login.route) { popUpTo(Screen.Splash.route) { inclusive = true } }
+            })
         }
 
         composable(Screen.Login.route) {
             LoginScreen(
-                onLoginSuccess = { navController.navigate(Screen.Home.route) { popUpTo(Screen.Login.route) { inclusive = true } } },
-                onRegister = { navController.navigate(Screen.Register.route) }
+                onLoginSuccess = {
+                    navController.navigate(Screen.Home.route) { popUpTo(Screen.Login.route) { inclusive = true } }
+                },
+                onRegister = { navController.navigate(Screen.Register.route) },
+                onDemo = { navController.navigate(Screen.Demo.route) }
+            )
+        }
+
+        composable(Screen.Demo.route) {
+            DemoScreen(
+                onRegister = { navController.navigate(Screen.Register.route) },
+                onBack = { navController.popBackStack() }
             )
         }
 
         composable(Screen.Register.route) {
-            RegisterScreen(onBack = { navController.popBackStack() })
+            RegisterScreen(
+                onSuccess = {
+                    navController.navigate(Screen.Home.route) { popUpTo(Screen.Login.route) { inclusive = true } }
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.Home.route) {
-            HomeScreen(navController = navController)
-        }
-
-        composable(Screen.MisMascotas.route) {
-            MisMascotasScreen(
-                onMascotaClick = { id -> navController.navigate(Screen.CarnetDetalle.withId(id)) }
+            HomeScreen(
+                onCarnet = { id -> navController.navigate(Screen.CarnetDetalle.withId(id)) },
+                onVeterinaria = { id -> navController.navigate(Screen.VeterinariaDetalle.withId(id)) }
             )
         }
 
         composable(
             route = Screen.CarnetDetalle.route,
             arguments = listOf(navArgument("mascotaId") { type = NavType.StringType })
-        ) { backStack ->
+        ) {
             CarnetDetalleScreen(
-                mascotaId = backStack.arguments?.getString("mascotaId") ?: "",
+                mascotaId = it.arguments?.getString("mascotaId") ?: "",
                 onBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(Screen.Mapa.route) {
-            MapaScreen(
-                onVeterinariaClick = { id -> navController.navigate(Screen.VeterinariaDetalle.withId(id)) }
             )
         }
 
         composable(
             route = Screen.VeterinariaDetalle.route,
             arguments = listOf(navArgument("vetId") { type = NavType.StringType })
-        ) { backStack ->
+        ) {
             VeterinariaDetalleScreen(
-                vetId = backStack.arguments?.getString("vetId") ?: "",
+                vetId = it.arguments?.getString("vetId") ?: "",
                 onBack = { navController.popBackStack() }
             )
-        }
-
-        composable(Screen.Adopciones.route) {
-            AdopcionesScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(Screen.Campanas.route) {
-            CampanasScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(Screen.Noticias.route) {
-            NoticiasScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(Screen.Perfil.route) {
-            PerfilScreen(onBack = { navController.popBackStack() })
         }
     }
 }
